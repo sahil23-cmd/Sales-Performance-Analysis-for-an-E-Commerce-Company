@@ -1,0 +1,31 @@
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Load the dataset
+data = pd.read_csv('ecommerce_sales_data.csv')
+
+# Display basic info
+print(data.info())
+
+# Clean missing values
+data.dropna(inplace=True)
+
+# Convert date column to datetime format
+data['Order Date'] = pd.to_datetime(data['Order Date'])
+
+# Calculate total sales per product
+data['Total Sales'] = data['Quantity'] * data['Price']
+
+# Top 10 products by sales
+top_products = data.groupby('Product Name')['Total Sales'].sum().sort_values(ascending=False).head(10)
+print(top_products)
+
+# Plot sales trend over time
+plt.figure(figsize=(10, 5))
+data.groupby(data['Order Date'].dt.to_period('M'))['Total Sales'].sum().plot(kind='line')
+plt.title('Monthly Sales Trend')
+plt.xlabel('Month')
+plt.ylabel('Total Sales')
+plt.grid(True)
+plt.show()
